@@ -6,7 +6,7 @@
 
 ; common functions
 
-(defn read-data
+(defn parse-input
   "Reads from file-name into a seq of the sum for every elf.
   Input: Name of file containing data for adventofcode.com/2022/day/1
   Output: (1042 521 4069 ...)"
@@ -19,7 +19,7 @@
        ; -> ((x y) (nil) (z...) ...)
        (partition-by nil?)
        ; -> ((x y) (z...) ...)
-       (remove #{'(nil)}) 
+       (remove #{'(nil)}) ; alternative: take-nth
        ; -> (s1 s2 ...)
        (map #(apply + %))))
 
@@ -28,14 +28,14 @@
 
 (defn part-1
   []
-  (apply max (read-data "res/input/day01.txt")))
+  (apply max (parse-input "res/input/day01.txt")))
 ; result: 66186
 
 ; part 2
 
 (defn part-2
   []
-  (->> (read-data "res/input/day01.txt")
+  (->> (parse-input "res/input/day01.txt")
        ; sort descending
        (sort-by (partial -))
        ; take the first three

@@ -1,6 +1,4 @@
-(ns aoc2022.day02
-  (:require [aoc2022.util :as u])
-  (:require [clojure.string :as s]))
+(ns aoc2022.day02)
 
 ; Day 2: Rock Paper Scissors
 
