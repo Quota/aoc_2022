@@ -6,6 +6,12 @@
 
 ; common functions
 
+(defn parse-input
+  "Returns a seq of lines of the given file."
+  [file-name]
+  (->> (slurp file-name)
+       s/split-lines))
+
 (defn letter-to-priority
   "Returns the prioriy for a letter. Priorities are defined as:
   a = 1, .., z = 26, A = 27, .., Z = 52."
@@ -13,27 +19,32 @@
   (let [l (int c)]
     ; \A == 65, \Z == 90  --> subtract 38 so that \A gets priority 27
     ; \a == 97, \z == 122 --> subtract 96 so that \a gets priority 1
-    (- l (if (<= 65 l 90) 38 96))))
+    (- l (if (<= l 90) 38 96))))
+
+(defn calc-total-score
+  "Calculates the total score (priorities) of uniq/common items after
+  grouping the rucksacks according to the given function.
+  The grouping-fn will receive a seq of all line and shall return
+  a seq of seqs of lines."
+  [grouping-fn]
+  (->> (parse-input "res/input/day03.txt")
+       ; group input
+       grouping-fn
+       ; find the uniq/common letters within every group
+       (mapcat (fn[te] (apply clojure.set/intersection (map set te))))
+       ; convert to list of priorities
+       (map letter-to-priority)
+       ; sum priorities
+       (reduce +)))
 
 ; part 1
 
 (defn part-1
-  "Priority over all items appearing in both compartments of each elf's
-  rucksack."
+  "Priority of all items in both compartments of each elf's rucksack."
   []
-  (->> (slurp "res/input/day03.txt")
-       ; list of lines (elf rucksacks) like "abckxyzk"
-       s/split-lines
-       ; -> list of [ "abck" "xyzk" ]
-       (map #(split-at (/ (.length %) 2) %))
-       ; -> list of #{ \k }
-       (map (fn [[l r]] (set (filter (set l) r))))
-       ; -> list of letters
-       (apply concat)
-       ; -> list of priorities
-       (map letter-to-priority)
-       ; sum priorities
-       (reduce +)))
+  (calc-total-score
+    ; left and right half of every rucksack:
+    (fn [lines] (map #(split-at (/ (.length %) 2) %) lines))))
 ; result: 8298
 
 ; part 2
@@ -42,17 +53,7 @@
   "Priority of all badges with a badge being the only item in the rucksacks
   of a set of three elves (i.e. three consecutive lines)."
   []
-  (->> (slurp "res/input/day03.txt")
-       ; list of lines (elf rucksacks) like "abckxyzk"
-       s/split-lines
-       ; -> three elves per group
-       (partition 3)
-       ; find uniq letter in every set of three elf rucksacks:
-       (map (fn[te] (apply clojure.set/intersection (map set te))))
-       ; flatten list of sets of letter into list of letters
-       (apply concat)
-       ; -> list of priorities
-       (map letter-to-priority)
-       ; sum priorities
-       (reduce +)))
+  (calc-total-score
+    ; three rucksacks equals one group
+    (fn [lines] (partition 3 lines))))
 ; result: 2708
