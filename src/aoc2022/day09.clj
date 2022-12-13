@@ -9,7 +9,7 @@
 (defn parse-input
   "Parses the given file into a seq of motions.
   Input: lines like \"X num\"
-  Outpu: ((:x1 num1) (:x2 num2) ...)"
+  Output: ((:x1 num1) (:x2 num2) ...)"
   [file-name]
   (->> (slurp file-name)
        str/split-lines
@@ -68,7 +68,7 @@
 
 (defn move-following
   "Moves `move-this` close to `follow-this` unless they already are
-  adjecent. Removes the new value of `move-this` after moving (or the
+  adjecent. Returns the new value of `move-this` after moving (or the
   unchanged value if moving was not necessary.)"
   [move-this follow-this]
   ; only if moving is actually necessary
@@ -85,8 +85,9 @@
   (update data :head vec-add (dir->vec dir)))
 
 (defn exec-motion-simple
-  "Executes `steps` into `dir`-ection for the two-knot rope. To be used in
-  a reduce call. Returns the updated `data`."
+  "Executes `steps` into `dir`-ection for the two-knot rope. Expects `data`
+  to have the two vecs :head and :tail as well as a :visited set.
+  To be used in a reduce call. Returns the updated `data`."
   [data [dir steps]]
   (loop [i steps
          data data]
@@ -115,8 +116,9 @@
 (def rope-length 10)
 
 (defn exec-motion-long
-  "Executes `steps` into `dir`-ection for an `rope-length` long rope. To be used in
-  a reduce call. Returns the updated `data`."
+  "Executes `steps` into `dir`-ection for a `rope-length` long rope.
+  Expects `data` to have a :knots vec and a :visited set.
+  To be used in a reduce call. Returns the updated `data`."
   [data [dir steps]]
   (loop [i steps
          data data]
