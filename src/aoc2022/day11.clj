@@ -58,9 +58,11 @@
       int))
 
 (defn play-turn
-  "Play the turn of monkey with the given number `mk-nr`."
+  "Play the turn of monkey with the given number `mk-nr`.
+  The `calc-worry-fn` receives the current monkey and the item and shall
+  return the item with the new worry level."
   ; for each item, apply op, divide by 3, apply test, move to next monkey
-  [calc-worry-fn worry-limit monkeys mk-nr]
+  [calc-worry-fn monkeys mk-nr]
   (let [curr-monkey (monkeys mk-nr)
         ; current monkeys items
         curr-items (curr-monkey :items)
@@ -70,26 +72,25 @@
         monkeys (assoc-in monkeys [mk-nr :items] [])]
     ; for each in current items: calc & test the worry level and move the item
     (reduce (fn[monkeys item]
-              (let [worry-level (calc-worry-fn curr-monkey item)
-                    worry-level (if worry-limit (rem worry-level worry-limit) worry-level)
-                    next-monkey (if (zero? (rem worry-level (curr-monkey :rem-test-arg)))
+              (let [worry-item (calc-worry-fn curr-monkey item)
+                    next-monkey (if (zero? (rem worry-item (curr-monkey :rem-test-arg)))
                                   (curr-monkey :rem-test-true)
                                   (curr-monkey :rem-test-false))]
-                (update monkeys next-monkey update :items conj worry-level)))
+                (update monkeys next-monkey update :items conj worry-item)))
             monkeys
             curr-items)))
 
 (defn play-round
   "Play one round with all monkeys."
-  [calc-worry-fn worry-limit monkeys]
-  (reduce (partial play-turn calc-worry-fn worry-limit) monkeys (range (count monkeys))))
+  [calc-worry-fn monkeys]
+  (reduce (partial play-turn calc-worry-fn) monkeys (range (count monkeys))))
 
 (defn part-1
   "Follow Monkeys for 20 rounds."
   []
   (let [monkeys (parse-input "res/input/day11.txt")]
     (->> monkeys
-         (iterate (partial play-round calc-worry-with-relief nil))
+         (iterate (partial play-round calc-worry-with-relief))
          (#(nth % 20))
          (map :inspect-count)
          (sort >)
@@ -101,17 +102,26 @@
 
 (defn calc-worry-without-relief
   "Calc worry level withOUT relief (no div by 3)."
-  [monkey item]
+  [worry-limit monkey item]
   (-> item
-      ((monkey :worry-fn) (or (monkey :worry-arg) item))))
+      ((monkey :worry-fn) (or (monkey :worry-arg) item))
+      ; don't let numbers grow to big:
+      (rem worry-limit)))
 
 (defn part-2
   "Monkeys play 10,000 rounds..."
   []
   (let [monkeys (parse-input "res/input/day11.txt")
+        ; to decide what monkey to throw an item to the monkeys test the 'worry' items.
+        ; these tests are always divisions by various numbers. our worry levels don't
+        ; need to be much bigger numbers than these divisors for the test to work.
+        ; in particular if we calculate the product of all divisors of all monkeys
+        ; then we have the highest relevant meta-divisor for all monkey tests to work.
+        ; values bigger than that don't contribute any more to the tests.
+        ; this trick helps us keep the item numbers from skyrocketing.
         worry-limit (->> monkeys (map :rem-test-arg) (apply *))]
     (->> monkeys
-         (iterate (partial play-round calc-worry-without-relief worry-limit))
+         (iterate (partial play-round (partial calc-worry-without-relief worry-limit)))
          (#(nth % 10000))
          (map :inspect-count)
          (sort >)
