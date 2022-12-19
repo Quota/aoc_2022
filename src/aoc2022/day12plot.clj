@@ -60,8 +60,8 @@
                       (ansi-color 
                         ; char to plot:
                         (get-in (:map data) rc)
-                        ; color to use:
-                        (get-console-terrain-col data rc))))))
+                        ; color to use: (violett/pink for visited terrain)
+                        (if (< (int (get-in (:map data) rc)) (int \e)) 54 128))))))
       ; draw new path
       (doseq [rc path]
         (print (str (esc [(+ 2 (first rc)) ";" (inc (second rc)) "H"])
