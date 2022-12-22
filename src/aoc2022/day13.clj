@@ -13,7 +13,7 @@
   Output: ([1 2 3] [1 [2 4]] ...)"
   [file-name]
   (->> (slurp file-name)
-       str/split-lines 
+       str/split-lines
        (remove empty?)
        (map clojure.edn/read-string)))
 
@@ -34,39 +34,41 @@
     ; or: right number? then: enclose right in list and repeat...
     (number? right)
     (recur left [right])
-    ; else: both lists? then: compare elements
+    ; neither left nor right are numbers -> they are lists
+    ; if: both empty? then: undecidable
+    (and (empty? left) (empty? right))
+    nil
+    ; or: left empty (i.e. shorter)? then: good order
+    (empty? left)
+    true
+    ; or: right empty (i.e. shorter): then: wrong order
+    (empty? right)
+    false
+    ; else: compare elements
     :else
-    (cond
-      ; if: both empty? then: undecidable
-      (and (empty? left) (empty? right)) 
-      nil
-      ; or: left empty (i.e. shorter)? then: good order
-      (empty? left)
-      true
-      ; or: right empty (i.e. shorter): then: wrong order
-      (empty? right)
-      false
-      ; else: compare elements
-      :else
-      (let [res (less-than? (first left) (first right))]
-        ; if: res nil (i.e. undecidable)? 
-        (if (nil? res)
-          ; then: compare rests
-          (recur (rest left) (rest right))
-          ; else: use/return res
-          res)))))
+    (let [res (less-than? (first left) (first right))]
+      ; if: res nil (i.e. undecidable)?
+      (if (nil? res)
+        ; then: compare rests
+        (recur (rest left) (rest right))
+        ; else: use/return res
+        res))))
 
 (defn part-1
   "Count well-ordered pairs."
   []
-  (let [data (parse-input "res/input/day13.txt")]
-    (->> data
-         (partition 2)
-         (map-indexed (fn[i [l r :as lr]] {:index (inc i) :left-right lr :right-order (less-than? l r)}))
-         (filter :right-order)
-         (map :index)
-         (apply +)
-         )))
+  (->> (parse-input "res/input/day13.txt")
+       ; group into pairs of two
+       (partition 2)
+       ; add index (as we need it later) and whether the pair is ordered
+       (map-indexed (fn[i [l r]] {:index (inc i) :ordered (less-than? l r)}))
+       ; filter the correctly ordered elements
+       (filter :ordered)
+       ; get the indexes
+       (map :index)
+       ; and calc the result
+       (apply +)
+       ))
 ; result: 5806
 
 ; part 2
@@ -74,12 +76,19 @@
 (defn part-2
   "Sort everything and [[2]] and [[6]]."
   []
-  (let [data (parse-input "res/input/day13.txt")]
-    (->> data
-         (concat [[[2]] [[6]]])
-         (sort less-than?)
-         (map-indexed (fn [idx dat] [(inc idx) dat]))
-         (filter (fn [[_ sec]] (#{[[2]] [[6]]} sec)))
-         (map first)
-         (apply *))))
+  (->> (parse-input "res/input/day13.txt")
+       ; add 2 and 6
+       (concat [[[2]] [[6]]])
+       ; sort everything
+       (sort less-than?)
+       ; add index as we need the indexes in the end
+       (map-indexed (fn [idx dat] {:index (inc idx) :input dat}))
+       ; filter the 2 and 6
+       (filter (fn [{:keys [input]}] (#{[[2]] [[6]]} input)))
+       ; stop the lazy filter when we have both elements
+       (take 2)
+       ; get the indexes
+       (map :index)
+       ; and calc the result
+       (apply *)))
 ; result: 23600
