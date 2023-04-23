@@ -23,8 +23,8 @@
   "Parses the given file into a seq of motions.
   Input: lines like \"...\"
   Output: ((...) (...) ...)"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (map #(str/split % #" "))
        (map (fn[[op & args]] [(keyword op) (if (seq args) (util/parse-int (first args)))]))
@@ -41,7 +41,7 @@
 (defn part-1
   "Calculate sum of signal strength of \"interesting\" signals."
   []
-  (let [cycles (->> "res/input/day10.txt"
+  (let [cycles (->> (util/get-input 10)
                     parse-input)]
     ; calculate signal strength for the following cycles
     (->> (for [i [20 60 100 140 180 220]]
@@ -65,7 +65,7 @@
 (defn part-2
   "Render CRT."
   []
-  (let [cycles (->> "res/input/day10.txt"
+  (let [cycles (->> (util/get-input 10)
                     parse-input)]
     ; iterate from 0..239 = cycles
     (->> (range 240)

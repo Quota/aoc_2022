@@ -39,9 +39,9 @@
           lines))
 
 (defn parse-input
-  "Parses the given file into a vec of monkey data (see `parse-monkey`)."
-  [file-name]
-  (->> (slurp file-name)
+  "Parses the given input into a vec of monkey data (see `parse-monkey`)."
+  [input]
+  (->> input
        str/split-lines
        (partition-by #(= "" %))
        (take-nth 2)
@@ -88,7 +88,7 @@
 (defn part-1
   "Follow Monkeys for 20 rounds."
   []
-  (let [monkeys (parse-input "res/input/day11.txt")]
+  (let [monkeys (parse-input (util/get-input 11))]
     (->> monkeys
          (iterate (partial play-round calc-worry-with-relief))
          (#(nth % 20))
@@ -111,7 +111,7 @@
 (defn part-2
   "Monkeys play 10,000 rounds..."
   []
-  (let [monkeys (parse-input "res/input/day11.txt")
+  (let [monkeys (parse-input (util/get-input 11))
         ; to decide what monkey to throw an item to the monkeys test the 'worry' items.
         ; these tests are always divisions by various numbers. our worry levels don't
         ; need to be much bigger numbers than these divisors for the test to work.

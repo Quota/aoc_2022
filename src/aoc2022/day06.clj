@@ -1,15 +1,15 @@
 (ns aoc2022.day06
   (:require [clojure.string :as s])
-  (:require [aoc2022.util :as u]))
+  (:require [aoc2022.util :as util]))
 
 ; Day 6: Tuning Trouble
 
 ; common functions
 
 (defn parse-input
-  "Returns a seq of lines of the given file."
-  [file-name]
-  (->> (slurp file-name)
+  "Returns a seq of lines of the given input."
+  [input]
+  (->> input
        s/split-lines))
 
 (defn analyze-word
@@ -51,17 +51,17 @@
 (defn part-1
   "Index of first 4-distinct-letters word."
   []
-  (->> "res/input/day06.txt"
+  (->> (util/get-input 6)
        parse-input
        (map (partial find-first-word 4))))
-; result: 1544
+; result (end-index): 1544
 
 ; part 2
 
 (defn part-2
   "Index of first 14-distinct-letters word."
   []
-  (->> "res/input/day06.txt"
+  (->> (util/get-input 6)
        parse-input
        (map (partial find-first-word 14))))
-; result: 2145
+; result (end-index): 2145

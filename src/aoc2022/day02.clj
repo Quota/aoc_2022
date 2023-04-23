@@ -1,4 +1,5 @@
-(ns aoc2022.day02)
+(ns aoc2022.day02
+  (:require [aoc2022.util :as util]))
 
 ; Day 2: Rock Paper Scissors
 
@@ -19,9 +20,9 @@
   {:r 1 :p 2 :s 3})
 
 (defn parse-input
-  "Reads from file-name into a seq of pairs according the given letter-map."
-  [file-name letter-map]
-  (->> (slurp file-name)
+  "Parses the given input into a seq of pairs according the given letter-map."
+  [input letter-map]
+  (->> input
       (re-seq #"[A-CX-Z]")
       (map letter-map)
       (partition 2)))
@@ -36,7 +37,7 @@
 
 (defn part-1
   []
-  (->> (parse-input "res/input/day02.txt" {"A" :r "B" :p "C" :s "X" :r "Y" :p "Z" :s})
+  (->> (parse-input (util/get-input 2) {"A" :r "B" :p "C" :s "X" :r "Y" :p "Z" :s})
        ; calc score of every round with (other-shape my-shape)
        (map calc-round-score)
        ; sum up all scores
@@ -52,7 +53,7 @@
 
 (defn part-2
   []
-  (->> (parse-input "res/input/day02.txt" {"A" :r "B" :p "C" :s "X" :l "Y" :d "Z" :w})
+  (->> (parse-input (util/get-input 2) {"A" :r "B" :p "C" :s "X" :l "Y" :d "Z" :w})
        ; list of (other-shape outcome) -> list of (other-shape my-shape)
        (map (fn [[other-shape outcome]] [other-shape (get-in shape-for-outcome-against [outcome other-shape])]))
        ; calc score of every round with (other-shape my-shape)

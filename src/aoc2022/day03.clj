@@ -1,15 +1,15 @@
 (ns aoc2022.day03
   (:require [clojure.string :as s])
-  (:require [aoc2022.util :as u]))
+  (:require [aoc2022.util :as util]))
 
 ; Day 3: Rucksack Reorganization
 
 ; common functions
 
 (defn parse-input
-  "Returns a seq of lines of the given file."
-  [file-name]
-  (->> (slurp file-name)
+  "Returns a seq of lines of the given input string."
+  [input]
+  (->> input
        s/split-lines))
 
 (defn letter-to-priority
@@ -27,7 +27,7 @@
   The grouping-fn will receive a seq of all line and shall return
   a seq of seqs of lines."
   [grouping-fn]
-  (->> (parse-input "res/input/day03.txt")
+  (->> (parse-input (util/get-input 3))
        ; group input
        grouping-fn
        ; find the uniq/common letters within every group

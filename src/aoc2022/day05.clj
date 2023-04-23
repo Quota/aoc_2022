@@ -45,8 +45,8 @@
 
 (defn parse-moves
   "Parses the move descriptions.
-  Input: lines like \"move <amount> from <from to <to>\"
-  Output: list of (<int:amount> <char:from> <char:to>)"
+  Input: Lines like \"move <amount> from <from to <to>\"
+  Output: List of (<int:amount> <char:from> <char:to>)"
   [lines]
   (->> lines ; first one is empty
        ; format: "move <amount> from <one> to <other>"
@@ -58,8 +58,8 @@
 
 (defn parse-input
   "Output: [(parse-stacks ...) (parse-moves ...)]"
-  [file-name]
-  (let [lines (s/split-lines (slurp file-name))
+  [input]
+  (let [lines (str/split-lines input)
         [stack-lines move-lines] (split-with (complement str/blank?) lines)]
     [(parse-stacks stack-lines)
      ; (first move-lines is empty)
@@ -88,7 +88,7 @@
 (defn part-1
   "Move with CrateMover 9000, one crate at a time."
   []
-  (->> "res/input/day05.txt"
+  (->> (util/get-input 5)
        parse-input
        ; apply the stack (as initial value) and movements (as seq)
        ; to the move-with-9000 function via `reduce`
@@ -114,7 +114,7 @@
 (defn part-2
   "Move with CrateMover 9001, multiple crates at once."
   []
-  (->> "res/input/day05.txt"
+  (->> (util/get-input 5)
        parse-input
        ; apply the stack (as initial value) and movements (as seq)
        ; to the move-with-9001 function via `reduce`

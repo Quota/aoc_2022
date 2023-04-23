@@ -10,8 +10,8 @@
   "Parses the given file into a seq of motions.
   Input: lines like \"X num\"
   Output: ((:x1 num1) (:x2 num2) ...)"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (map #(str/split % #" "))
        (map (fn [[dir steps]] [(keyword (str/lower-case dir)) (util/parse-int steps)]))))
@@ -103,7 +103,7 @@
 (defn part-1
   "Positions visited by the tail of a 2-know long rope."
   []
-  (as-> "res/input/day09.txt" $
+  (as-> (util/get-input 9) $
     (parse-input $)
     (reduce exec-motion-simple {:head [0 0] :tail [0 0] :visited #{[0 0]}} $)
     (assoc $ :visited-count (count ($ :visited)))
@@ -136,7 +136,7 @@
 (defn part-2
   "Positions visited by the tail of a 10-knot long rope."
   []
-  (as-> "res/input/day09.txt" $
+  (as-> (util/get-input 9) $
     (parse-input $)
     (reduce exec-motion-long {:knots (into [] (repeat rope-length [0 0])) :visited #{[0 0]}} $)
     (assoc $ :visited-count (count ($ :visited)))

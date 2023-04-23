@@ -11,12 +11,12 @@
 ; common functions
 
 (defn parse-input
-  "Parse given file and return a map like
+  "Parses the given input and return a map like
   {:map <nested vector, the outer being rows, the inner cols>
    :start-rc [start-row start-column] 
    :end-rc [end-row end-column]"
-  [file-name]
-  (let [map-data (vec (map vec (str/split-lines (slurp file-name))))
+  [input]
+  (let [map-data (vec (map vec (str/split-lines input)))
         start-rc (vec (ffirst (keep-indexed (fn [r row] (seq (keep-indexed (fn[c v] (if (= v \S) [r c])) row))) map-data)))
         end-rc (vec (ffirst (keep-indexed (fn [r row] (seq (keep-indexed (fn[c v] (if (= v \E) [r c])) row))) map-data)))]
     {:map map-data
@@ -154,7 +154,7 @@
   "Shortest path from S to E."
   []
   (plot-any nil nil)
-  (let [map-data (parse-input "res/input/day12.txt")
+  (let [map-data (parse-input (util/get-input 12))
         map-data (assoc map-data
                         :get-height get-height
                         :dij-path dij-path)
@@ -171,7 +171,7 @@
   []
   ; loop over all a's, execute run-dijkstra and calc-dij-distance 
   ; and return the lowest distance value
-  (let [map-data (parse-input "res/input/day12.txt")
+  (let [map-data (parse-input (util/get-input 12))
         dij-data (init-dij-data map-data (:start-rc map-data))
         width (count (:map dij-data))
         height (count (get (:map dij-data) 0))

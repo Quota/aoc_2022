@@ -8,13 +8,13 @@
 ; common functions
 
 (defn parse-input
-  "Parses given file and returns a list of sensor data, each item containing
-  the sensor coordinates, the beacon coordinates and the manhatten distance
-  between the sensor and the beacon.
+  "Parses the given input and returns a list of sensor data, each item
+  containing the sensor coordinates, the beacon coordinates and the manhatten
+  distance between the sensor and the beacon.
   Input: Lines like \"Sensor at x=14, y=3: closest beacon is at x=15, y=3\"
   Output: ({:sensor [14 3] :beacon [15 3] :distance 1}, ...)"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (map #(re-seq #"-?\d+" %))
        (map #(map util/parse-int %))
@@ -85,7 +85,7 @@
 (defn part-1
   "Count locations in y=2000000 where the distress beacon CANNOT be."
   []
-  (let [sensor-data (parse-input "res/input/day15.txt")
+  (let [sensor-data (parse-input (util/get-input 15))
         y 2000000
         beacon-count (->> sensor-data
                           (map :beacon) ; get beacon data
@@ -103,7 +103,7 @@
 (defn part-2
   "Find the location of the distress beacon (and its frequency)."
   []
-  (let [sensor-data (parse-input "res/input/day15.txt")]
+  (let [sensor-data (parse-input (util/get-input 15))]
     (->> (range 0 4000000)
          ; for all lines (y=0..4e6) get the no-beacon locations x:
          (pmap (fn [y] [(find-no-beacon-locations sensor-data y) y]))

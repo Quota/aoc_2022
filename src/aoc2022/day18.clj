@@ -14,10 +14,10 @@
 ; common functions
 
 (defn parse-input
-  "Reads the given file and returns a set with all lava cubes in it.
+  "Parses the given input and returns a set with all lava cubes in it.
   Output: #{[x1 y1 z1] [x2 y2 z2] ...}"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (map (fn [line] (mapv util/parse-int (str/split line #","))))
        set))
@@ -40,7 +40,7 @@
 (defn part-1
   "..."
   []
-  (let [black-cubes (parse-input "res/input/day18.txt")]
+  (let [black-cubes (parse-input (util/get-input 18))]
     (->> black-cubes
          (map (partial count-open-sides black-cubes))
          (apply +))))
@@ -120,7 +120,7 @@
 (defn part-2
   "..."
   []
-  (let [black-cubes (parse-input "res/input/day18.txt")
+  (let [black-cubes (parse-input (util/get-input 18))
         size (get-size black-cubes)
         blue-cubes (reduce (partial let-it-flow black-cubes size) #{} (get-surface-xyz size))
         outer-surfaces (filter (get-surface-xyz size) black-cubes)]

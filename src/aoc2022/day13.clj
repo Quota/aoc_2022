@@ -8,11 +8,12 @@
 ; common functions
 
 (defn parse-input
-  "Parse given file and return a list of clojure-data of each non-empty line.
+  "Parses the given input and returns a list of clojure-data of each
+  non-empty line.
   Input: \"[1,2,3]\\n[1,[2,4]]\\n...\"
   Output: ([1 2 3] [1 [2 4]] ...)"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (remove empty?)
        (map clojure.edn/read-string)))
@@ -57,7 +58,7 @@
 (defn part-1
   "Count well-ordered pairs."
   []
-  (->> (parse-input "res/input/day13.txt")
+  (->> (parse-input (util/get-input 13))
        ; group into pairs of two
        (partition 2)
        ; add index (as we need it later) and whether the pair is ordered
@@ -76,7 +77,7 @@
 (defn part-2
   "Sort everything and [[2]] and [[6]]."
   []
-  (->> (parse-input "res/input/day13.txt")
+  (->> (parse-input (util/get-input 13))
        ; add 2 and 6
        (concat [[[2]] [[6]]])
        ; sort everything

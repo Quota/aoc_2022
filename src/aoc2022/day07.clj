@@ -14,8 +14,8 @@
   (loop [contents {}
          lines lines]
     ; if ls output finished or no more lines
-    (if (or (.startsWith (first lines) "$")
-            (empty? lines))
+    (if (or (empty? lines)
+            (.startsWith (first lines) "$"))
       ; then return dir contents and the remaining lines
       [contents lines]
       ; else continue to parse lines
@@ -49,15 +49,15 @@
                           ".." (update data :current pop)
                           (update data :current conj (first args)))
                         line-n)
-            "ls" (let [[dir-content remaining-lines] (parse-ls-output line-n)]
+            "ls" (let [[dir-content remaining-lines] (parse-ls-output {} line-n)]
                    (recur (assoc data (:current data) dir-content)
                           remaining-lines))))))))
 
 (defn parse-input
-  "Reads lines of the given file and calls `parse-shell` with them."
-  [file-name]
-  (-> (slurp file-name)
-       s/split-lines
+  "Calls `parse-shell` with the lines of input."
+  [input]
+  (-> input
+       str/split-lines
        parse-shell))
 
 (defn calc-size-of-dir
@@ -77,7 +77,7 @@
 (defn part-1
   "Sum of all sizes of dirs that are 100.000 or smaller."
   []
-  (let [dir-data (parse-input "res/input/day07.txt")]
+  (let [dir-data (parse-input (util/get-input 7))]
     (->> dir-data
          keys
          (map (fn[path] [path (calc-size-of-dir dir-data path)]))
@@ -95,7 +95,7 @@
 (defn part-2
   "Find size of smallest dir to free to have enough space for the update."
   []
-  (let [dir-data (parse-input "res/input/day07.txt")
+  (let [dir-data (parse-input (util/get-input 7))
         free-to-enable-update (- update-size (- fs-size (calc-size-of-dir dir-data ["/"])))]
     (->> dir-data
          keys

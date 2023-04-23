@@ -19,8 +19,8 @@
   "Returns a vec of vecs with the tree heights from the given file.
   Input: \"123...\\n456...\\n...\"
   Output: [[1 2 3 ...] [4 5 6 ...] ...]"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (map parse-line)
        (into [])))
@@ -58,10 +58,9 @@
 (defn part-1
   "Count visible trees."
   []
-  (->> "res/input/day08.txt"
+  (->> (util/get-input 8)
        parse-input
-       count-visible-trees
-       ))
+       count-visible-trees))
 ; result: 1835
 
 ; part 2
@@ -103,8 +102,7 @@
 (defn part-2
   "Find tree with highest scenic score."
   []
-  (->> "res/input/day08.txt"
+  (->> (util/get-input 8)
        parse-input
-       find-highest-scenic-score
-       ))
+       find-highest-scenic-score))
 ; result: 263670

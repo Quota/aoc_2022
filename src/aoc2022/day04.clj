@@ -1,6 +1,6 @@
 (ns aoc2022.day04
   (:require [clojure.string :as s])
-  (:require [aoc2022.util :as u]))
+  (:require [aoc2022.util :as util]))
 
 ; Day 4: Camp Cleanup
 
@@ -8,13 +8,13 @@
 
 (defn parse-input
   "Returns a seq of quadruples, the starts and ends of two cleaning intervals.
-  In file: lines like \"s0,e0-s1,e1\"
+  Input: Lines like: \"s0,e0-s1,e1\"
   Output: ((s0 e0 s1 e1) ...)"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        s/split-lines
        (map (partial re-seq #"\d+"))
-       (map (partial map u/parse-int))))
+       (map (partial map util/parse-int))))
 
 ; part 1
 
@@ -28,7 +28,7 @@
 (defn part-1
   "Count fully overapping cleaning plans."
   []
-  (->> "res/input/day04.txt"
+  (->> (util/get-input 4)
        parse-input
        (filter overlap-fully?)
        count))
@@ -46,7 +46,7 @@
 (defn part-2
   "Count partly overlapping cleaning plans."
   []
-  (->> "res/input/day04.txt"
+  (->> (util/get-input 4)
        parse-input
        (filter overlap-partly?)
        count))

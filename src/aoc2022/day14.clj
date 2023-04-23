@@ -30,12 +30,12 @@
         (println)))))
 
 (defn parse-input
-  "Parse given file and return a list of list of points.
+  "Parses the given input and returns a list of list of points.
   Input: Lines like: \"x1,y1 -> .. -> xN,yN\"
   Output: ( ( (x1 y1) .. (xN yN) )
             ... for every line ...)"
-  [file-name]
-  (->> (slurp file-name)
+  [input]
+  (->> input
        str/split-lines
        (map #(re-seq #"\d+" %))
        (map #(map util/parse-int %))
@@ -151,7 +151,7 @@
 (defn part-1
   "Sand falls and rests, until abyss."
   []
-  (->> (parse-input "res/input/day14.txt")
+  (->> (parse-input (util/get-input 14))
        input->cave
        (iterate drop-sand)
        ; iterate until sand reaches abyss
@@ -167,7 +167,7 @@
 (defn part-2
   "Sand falls and rests, until origin (500,0) is blocked."
   []
-  (->> (parse-input "res/input/day14.txt")
+  (->> (parse-input (util/get-input 14))
        input->cave
        ; add ground floor
        ((fn[cave] (-> cave (update :max-y + 2) (assoc :ground true))))
