@@ -96,12 +96,12 @@
   Output:
   - Map like `data`"
   [curr data nbr]  ; nbr: neighbor (of curr) to check
-  (let [abs-costs ((:abs-costs data) curr)
-        new-costs (+ abs-costs (dij-get-costs data curr nbr))] ; todo replace dij-get-costs by (:cost-fn data)
+  (let [new-costs (+ ((:abs-costs data) curr)
+                     (dij-get-costs data curr nbr))] ; todo replace dij-get-costs by (:cost-fn data)
     ; if in queue but new-costs is better (lower),
     ; or not visited yet (no parent)?
     (if (or (and (contains? (:queue data) nbr)
-                 (< new-costs abs-costs))
+                 (< new-costs  ((:abs-costs data) nbr)))
             (not (contains? (:parents data) nbr)))
       ; then enqueue (or update queue priority) and
       ; update value and parent
